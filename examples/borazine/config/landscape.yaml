@@ -1,0 +1,80 @@
+# Configuration file for B3N3H6 (borazine) molecular landscape exploration
+# This file sets up parameters for exploring the potential energy landscape of ethane
+
+# Backend configuration for borazine molecule - uses dxtb quantum chemistry
+backend:
+  name: "dxtb" # Use dxtb backend
+  cmp_mthd: "GFN1-xTB" 
+  memory: "6000 MB" # Memory allocation
+  num_threads: 1 # CPU threads
+  options: 
+    {}
+  molecule_directives: # Molecular constraints
+    {}
+
+# Initial critical point data - starting point for landscape exploration
+initial_point:
+  data_path: "./data/borazine.json" # Path to initial structure file
+  index: 0 # Index of critical point in dataset
+
+# Graph configuration - for building the critical point graph
+graph:
+  threshold: 0.1 # RMSD threshold for connecting points
+  distance_function: "rmsd_smart" # Use RMSD for distance calculation
+
+# Search orchestrator configuration - manages the search process
+orchestrator:
+  type: "serial" # Run searches sequentially
+  d_max: 3 # Maximum graph distance to explore
+  perturbation_magnitude: 0.01 # Magnitude of perturbations
+  n_directions: 1 # number of lowest positive directions to explore in an upward search
+  max_concurrent: 15 # maximum allowed number of jobs to run in parallel
+
+# Search configuration - controls upward/downward searches
+search:
+  run_upward: true # Search for higher energy critical points
+  run_downward: true # Search for lower energy critical points
+  # upward_perturbation: 0.1 # Perturbation for upward searches
+  # downward_perturbation: 0.1 # Perturbation for downward searches
+
+# Periodic checkpoint configuration - automatic saving during long runs
+periodic_checkpoints:
+  enabled: true # Enable periodic checkpoints
+  interval: 1 # Save every N critical points found
+  max_count: 20 # Maximum number of checkpoints to keep
+  prefix: "checkpoint_periodic" # Prefix for checkpoint files
+
+# Checkpoint loading - set to null for fresh start, or path to resume
+#checkpoint_dir: ./outputs/2026_03_18-14_53_15/checkpoint_periodic_000002_20260318_145710 
+checkpoint_dir: null # null = start fresh, path = resume from checkpoint
+
+# HiSD dynamics configuration - High index saddle dynamics
+hisd:
+  symmetry_handler: "molecular" # Use molecular symmetry constraints
+  dt: 0.75 # Time step for dynamics
+  maxiter: 300 # Maximum iterations
+  grad_norm_tol: 2e-5 # Gradient norm convergence tolerance
+  log_interval: 1 # Logging frequency
+  subspace_update_interval: 1 # Subspace update frequency
+  fd_eps: 1e-3 # Finite difference epsilon for Hessian
+  metrics: # Metrics to track during dynamics
+    - "energy" # Potential energy
+    - "grad_norm" # Gradient norm
+    - "hess_eval_max" # Maximum Hessian eigenvalue
+    - "hess_eval_min" # Minimum Hessian eigenvalue
+
+# Eigensolver configuration - for Hessian eigenvalue computation
+eigensolver:
+  name: "lobpcg" # Use numpy.linalg.eigh
+  k: 10 # Number of eigenvalues
+  tol: 1e-3 # Tolerance
+  maxiter: 50 # Maximum iterations
+  largest: false
+  random_state: 42
+# Hydra configuration - experiment management
+hydra:
+  run:
+    dir: ./outputs/${now:%Y_%m_%d-%H_%M_%S} # Single run output directory
+  sweep:
+    dir: ./outputs/multirun/${now:%Y_%m_%d-%H_%M_%S} # Multi-run output directory
+    subdir: ${hydra.job.num} # Subdirectory for each job</content>
