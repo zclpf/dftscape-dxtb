@@ -1,0 +1,55 @@
+SYSTEM REQUIREMENTS
+
+The code has been tested with python 3.12 on Ubuntu 22.04 and on 
+Linux Mint 22.2
+
+The software requires a backend (such as xTB), plus all the packages listed
+in the dftscape-dxtb/pyproject.toml file.
+
+
+
+
+INSTALLATION
+
+in the dftscape-dxtb directory run:
+
+curl -LsSf https://astral.sh/uv/install.sh | sh  # install uv
+uv python install 3.12                           # setup the environment
+uv sync
+uv pip install -e .
+uv pip install dxtb[libcint]
+
+On a typical modern CPU it approximately takes 1 to 3 minutes to complete
+the installation.
+
+
+
+
+DEMO
+
+in the dftscape-dxtb directory run:
+
+source .venv/bin/activate                       # activate the environment
+cd ./examples/ethane
+python create_data.py ./data/ethane.xyz True    # create input data for 
+												# k-HiSD using an xyz file
+python landscape.py                             # run the automated saddle
+												# search method
+
+The output will be saved in the dftscape-dxtb/examples/ethane/outputs
+directory.
+
+On a typical modern CPU it will take 1-2 minutes to find the eclipsed
+and staggered ethane conformations. 
+
+
+
+
+INSTRUCTION FOR USE 
+
+The data we show in the main text of the paper is stored in the 
+dftscape-dxtb/results/borazine_graph.json, which contains all the found
+transition states, local minima and dissociated molecules.
+
+Our presented data can be reproduced by following all the steps in the
+"DEMO USAGE" section, with "ethane" substitued for "borazine".
